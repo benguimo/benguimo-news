@@ -12,16 +12,48 @@ afterAll(() => {
     return db.end()
 })
 
-describe('GET/API', () => {
-    test('200 OK: message', () => {
-        return request(app)
+
+describe('GET /api', () => {
+    test('Serves up a JSON representation of all the available endpoints of the api', () => {
+      request(app)
         .get('/api')
         .expect(200)
-        .then(({body}) => {
-            expect(body.msg).toBe("All OK")
+        .then((response) => {
+            const { body } = response;
+            const { endpoints } = body
+          expect(endpoints).toBeInstanceOf(Object)
+          expect(Object.keys(endpoints)).toHaveLength(3)
+
+          expect(endpoints['GET /api']).toMatchObject({
+            description: expect.any(String),
+          });
+  
+          expect(endpoints['GET /api/topics']).toMatchObject({
+            description: expect.any(String),
+            queries: expect.any(Array),
+            exampleResponse: expect.any(Object),
+          });
+  
+          expect(endpoints['GET /api/articles']).toMatchObject({
+            description: expect.any(String),
+            queries: expect.any(Array),
+            exampleResponse: expect.any(Object),
+          });
         })
-    })
-})
+    });
+  });
+  
+  describe('GET/API (ERROR)', () => {
+
+      test('404 Not Found: invalid endpoint', () => {
+        return request(app)
+          .get('/nonsense')
+          .expect(404)
+      });
+    });
+
+
+
 
 describe('GET/API/TOPICS', () => {
     test('200 OK: all topics', () => {
@@ -41,6 +73,8 @@ describe('GET/API/TOPICS', () => {
         })
     })
 })
+
+
 
 describe('GET /api/topics (ERROR)', () => {
     test('404 Not Found: invalid route', () => {
