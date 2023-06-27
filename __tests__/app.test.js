@@ -107,12 +107,21 @@ describe('GET /api/topics', () => {
               topic: expect.any(String),
               author: expect.any(String),
               body: expect.any(String),
-              created_at: expect.any(Number),
+              created_at: expect.any(String),
               votes: expect.any(Number),
-              article_img_url: expect.any(String)
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String)
             });
           });
         });
+    });
+    test("404 Not Found: invalid request", () => {
+      return request(app)
+        .get("/api/nothing")
+        .expect(404)
+          .then((res) => {
+            expect(res.error).toMatchObject({ message: "cannot GET /api/nothing (404)" });
+      })
     });
   });
 
