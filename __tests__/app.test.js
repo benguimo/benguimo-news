@@ -93,4 +93,26 @@ describe('GET /api/topics', () => {
   });
 
   
+  describe('GET /api/articles', () => {
+    test('200 OK: an articles array of article objects (including certain properties)', () => {
+      return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body
+          expect(articles).toHaveLength(13);
+          articles.forEach((article) => {
+            expect(article).toMatchObject({
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              created_at: expect.any(Number),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String)
+            });
+          });
+        });
+    });
+  });
 
