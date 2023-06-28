@@ -120,3 +120,40 @@ describe('GET /api/topics', () => {
     
   });
 
+  describe("GET /api/articles/:article_id/comments", () => {
+    test("200 OK: all comments for an article", () => {
+      return request(app)
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          const { comments } = body;
+          expect(comments).toBeInstanceOf(Array);
+          comments.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id");
+            expect(comment).toHaveProperty("votes");
+            expect(comment).toHaveProperty("created_at");
+            expect(comment).toHaveProperty("author");
+            expect(comment).toHaveProperty("body");
+            expect(comment).toHaveProperty("article_id");
+          });
+        });
+    });
+  
+    test("404 Not Found: valid api but no ID", () => {
+      return request(app)
+        .get("/api/articles/99999/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not Found");
+        });
+    });
+  
+    test("400 Bad Request: error message when passed invalid article ID", () => {
+      return request(app)
+        .get("/api/articles/noID/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request");
+        });
+    });
+  });
