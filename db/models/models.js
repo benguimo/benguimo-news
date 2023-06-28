@@ -1,10 +1,15 @@
 const db = require("../connection")
 
+
+
+
 exports.selectAllTopics = () => {
 return db.query(`SELECT * FROM topics;`).then(({rows}) => {
   return {topics: rows}
   })
 }
+
+
 
 
 exports.selectArticleById = (article_id) => {
@@ -22,6 +27,9 @@ exports.selectArticleById = (article_id) => {
         })
       }
 
+
+
+
 exports.selectAllArticles = () => {
   return db.query(`
   SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url, 
@@ -37,6 +45,8 @@ exports.selectAllArticles = () => {
 
 
 
+
+
 exports.selectComments = (article_id) => {
   return db
   .query(`SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`, [article_id])
@@ -44,33 +54,54 @@ exports.selectComments = (article_id) => {
     if(comments.length === 0) {
       return Promise.reject({ status: 404, msg: 'Not Found' })
     }
-    return comments;
+    return comments
   });
 };
-exports.insertComment = (article_id, comment) => {
-    const { username, body } = comment;
 
-    if (!username || !body) {
-      return Promise.reject({ status: 400, msg: "Bad Request" });
-    }
+
+
+
+
+exports.insertComment = (article_id, comment) => {
+  const { username, body } = comment
+
+      if (!username || !body) {
+        return Promise.reject({ status: 400, msg: "Bad Request" })
+      }
   
-    const newComment = {
-      author: username,
-      article_id,
-      body,
-      created_at: Date.now().toString()
-    };
+  const newComment = {
+    author: username,
+    article_id,
+    body,
+    created_at: Date.now().toString()
+  }
   
-    return db
+  return db
       .query(
         "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *;",
         [article_id, username, body]
       )
       .then((result) => {
-        const [comment] = result.rows;
-        comment.username = newComment.author;
-        comment.created_at = newComment.created_at;
+        const [comment] = result.rows
+        comment.username = newComment.author
+        comment.created_at = newComment.created_at
         return comment;
+      })
+  }
+
+
+
+  exports.updateArticleById = (article_id, inc_votes) => {
+    if (!inc_votes || typeof inc_votes !== "number") {
+      return Promise.reject({ status: 400, msg: 'Bad Request' });
+    }
+    return db
+      .query('UPDATE articles SET votes = votes + $2 WHERE article_id = $1 RETURNING *', [article_id, inc_votes])
+      .then((result) => {
+        if (!result.rows.length) {
+          return Promise.reject({ status: 404, msg: 'Not Found' });
+        }
+        return result.rows[0];
       });
   };
 

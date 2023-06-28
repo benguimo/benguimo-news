@@ -176,6 +176,7 @@ describe('GET /api/topics', () => {
           });
         });
     })
+    
     test('404 Not Found: non-existing article', () => {
       return request(app)
         .post('/api/articles/9898/comments')
@@ -185,9 +186,53 @@ describe('GET /api/topics', () => {
           expect(body.msg).toBe('Not Found');
         });
     })
+
     test('400 Bad Request: missing fields', () => {
       return request(app)
         .post('/api/articles/1/comments')
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request');
+        });
+    });
+  })
+
+  describe('PATCH: /api/articles/:article_id', () => {
+    test('200: adds new vote to votes in article', () => {
+
+      return request(app)
+        .patch('/api/articles/1')
+        .send({inc_votes: 1})
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).toEqual({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T21:11:00.000Z",
+            votes: 101,
+            article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          });
+        });
+    })
+
+    test('404 Not Found: valid article ID but non-existing article', () => {
+      return request(app)
+        .patch('/api/articles/9999')
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Not Found")
+        })
+      })
+
+
+    test('400 Bad Request: missing or invalid inc_votes', () => {
+      return request(app)
+        .patch('/api/articles/1')
         .send({})
         .expect(400)
         .then(({ body }) => {
