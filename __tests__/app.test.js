@@ -18,7 +18,7 @@ describe('ANY: ALL non-existent path', () => {
   test('400: Not A Path, returns custom error message when no path is found', () => {
     return request(app)
     .get('/api/notapath')
-    .expect(400)
+    .expect(404)
     .then(({ body }) => {
       expect(body.msg).toBe("Not found")
     })

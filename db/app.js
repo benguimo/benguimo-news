@@ -20,7 +20,7 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.all("*", (_, res) => {
-  res.status(400).send({msg: "Not found"})
+  res.status(404).send({msg: "Not found"})
 })
 
 app.use(handlePsqlErrors);
