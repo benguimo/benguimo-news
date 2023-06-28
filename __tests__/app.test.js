@@ -14,6 +14,17 @@ afterAll(() => {
 })
 
 
+describe('ANY: ALL non-existent path', () => {  
+  test('400: Not A Path, returns custom error message when no path is found', () => {
+    return request(app)
+    .get('/api/notapath')
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Not found")
+    })
+  })
+})
+
 describe('GET /api', () => {
     test('Serves up a JSON representation of all the available endpoints of the api', () => {
       return request(app)
@@ -23,17 +34,9 @@ describe('GET /api', () => {
           expect(body).toEqual(apiData)
     })
   })
-
-    test('404 Not Found: invalid endpoint', () => {
-        return request(app)
-          .get('/nonsense')
-          .expect(404)
-          .then((res) => {
-            expect(res.error).toMatchObject({ message: "cannot GET /nonsense (404)" });
-      })
-  })
 })
-  
+
+
 
 describe('GET /api/topics', () => {
     test('200 OK: all topics', () => {
@@ -53,7 +56,6 @@ describe('GET /api/topics', () => {
              })
         })
     })
-
   })
 
 
@@ -102,11 +104,11 @@ describe('GET /api/topics', () => {
           const { articles } = body
           expect(articles).toHaveLength(13);
           articles.forEach((article) => {
+            expect(article).not.toHaveProperty('body')
             expect(article).toMatchObject({
               title: expect.any(String),
               topic: expect.any(String),
               author: expect.any(String),
-              body: expect.any(String),
               created_at: expect.any(String),
               votes: expect.any(Number),
               article_img_url: expect.any(String),
@@ -115,13 +117,6 @@ describe('GET /api/topics', () => {
           });
         });
     });
-    test("404 Not Found: invalid request", () => {
-      return request(app)
-        .get("/api/nothing")
-        .expect(404)
-          .then((res) => {
-            expect(res.error).toMatchObject({ message: "cannot GET /api/nothing (404)" });
-      })
-    });
+    
   });
 
