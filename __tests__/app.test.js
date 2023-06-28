@@ -20,7 +20,7 @@ describe('ANY: ALL non-existent path', () => {
     .get('/api/notapath')
     .expect(404)
     .then(({ body }) => {
-      expect(body.msg).toBe("Not found")
+      expect(body.msg).toBe("Not Found")
     })
   })
 })
@@ -157,3 +157,41 @@ describe('GET /api/topics', () => {
         });
     });
   });
+
+
+  describe('POST /api/articles/:article_id/comments', () => {
+    test('201: returns the posted comment', () => {
+      return request(app)
+        .post('/api/articles/1/comments')
+        .send({ username: 'icellusedkars', body: 'POST: comment/article_id' })
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toHaveProperty('comment')
+          expect(body.comment).toMatchObject({
+            comment_id: expect.any(Number),
+            article_id: 1,
+            username: 'icellusedkars',
+            body: 'POST: comment/article_id',
+            created_at: expect.any(String),
+          });
+        });
+    })
+    test('404 Not Found: non-existing article', () => {
+      return request(app)
+        .post('/api/articles/9898/comments')
+        .send({ username: 'icellusedkars', body: 'POST: comment/article_id' })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Not Found');
+        });
+    })
+    test('400 Bad Request: missing fields', () => {
+      return request(app)
+        .post('/api/articles/1/comments')
+        .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request');
+        });
+    });
+  })

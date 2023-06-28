@@ -1,4 +1,4 @@
-const { selectAllTopics, selectArticleById, selectAllArticles, selectArticleComments} = require("../models/models")
+const { selectAllTopics, selectArticleById, selectAllArticles, insertComment, selectComments} = require("../models/models")
 const endpoints = require('../../endpoints.json');
 
 exports.getApi = (req, res, next) => {
@@ -34,14 +34,30 @@ exports.getAllArticles = (req, res, next) => {
   };
 
 
-
-  exports.getArticleComments = (req, res, next) => {
+  exports.getComments = (req, res, next) => {
     const { article_id } = req.params;
-    selectArticleComments(article_id)
+    selectComments(article_id)
       .then((comments) => {
         res.status(200).send({ comments });
       })
-      .catch((err) => {
-        next(err);
-      });
+      .catch(next);
+  };
+  
+  exports.postComment = (req, res, next) => {
+    const { article_id } = req.params;
+    const { body, username } = req.body;
+    const comment = { body, username };
+  
+    selectArticleById(article_id)
+      .then((article) => {
+        if (!article) {
+          return Promise.reject({ status: 404, msg: 'Not Found' });
+        }
+  
+        return insertComment(article_id, comment);
+      })
+      .then((comment) => {
+        res.status(201).send({ comment });
+      })
+      .catch(next);
   };

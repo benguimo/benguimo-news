@@ -48,13 +48,29 @@
       "comments": [
         {
           "comment_id": 1,
-          "author": "butter_bridge",
+          "author": "icellusedkars",
           "article_id": 1,
           "votes": 16,
           "created_at": "2016-07-09T18:07:18.942Z",
           "body": "Comment text..."
         }
       ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "Adds a comment for an article",
+    "requestBody": {
+      "username": "string",
+      "body": "string"
+    },
+    "exampleResponse": {
+      "comment": {
+        "comment_id": 1,
+        "article_id": 1,
+        "username": "icellusedkars",
+        "body": "POST: comment/article_id",
+        "created_at": "2023-06-28T12:00:00Z"
+      }
     }
   }
 }
