@@ -121,14 +121,6 @@ describe('GET /api/topics', () => {
   })
 
   describe("GET /api/articles/:article_id/comments", () => {
-    test('200 OK: empty array when article_id is valid but has no comments', () => {
-      return request(app)
-        .get('/api/articles/2/comments')
-        .expect(200)
-        .then((response) => {
-          expect(response.body.comments).toEqual(expect.any(Array));
-        });
-        })
 
     test("200 OK: all comments for an article", () => {
       return request(app)
@@ -138,15 +130,8 @@ describe('GET /api/topics', () => {
           const { comments } = body
           expect(comments).toBeInstanceOf(Array)
           expect(comments).toHaveLength(11) 
-          
-          comments.forEach((comment) => {
-            expect(comment).toHaveProperty("comment_id")
-            expect(comment).toHaveProperty("body")
-            expect(comment).toHaveProperty("votes")
-            expect(comment).toHaveProperty("author")
-            expect(comment).toHaveProperty("article_id")
-            expect(comment).toHaveProperty("created_at")
 
+          comments.forEach((comment) => {
             expect(comment).toMatchObject({
               comment_id: expect.any(Number),
               body:  expect.any(String),
@@ -164,10 +149,20 @@ describe('GET /api/topics', () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
-        expect(comments[0].created_at).toBe("2020-11-03T21:00:00.000Z");
-        expect(comments[comments.length - 1].created_at).toBe("2020-01-01T03:08:00.000Z");
+        expect(comments).toBeSortedBy('created_at', { descending: true })
       });
   })
+
+  test('200 OK: empty array when article_ID IS VALID BUT has NO COMMENTS', () => {
+    return request(app)
+      .get('/api/articles/2/comments')
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toEqual([]);
+      });
+      })
+
 
     test("404 Not Found: valid api but no ID", () => {
       return request(app)
