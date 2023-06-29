@@ -1,4 +1,4 @@
-const { selectAllTopics, selectArticleById, selectAllArticles, insertComment, selectComments} = require("../models/models")
+const { selectAllTopics, selectArticleById, selectAllArticles, insertComment, selectArticleComments} = require("../models/models")
 const endpoints = require('../../endpoints.json');
 
 exports.getApi = (req, res, next) => {
@@ -36,7 +36,7 @@ exports.getAllArticles = (req, res, next) => {
 
   exports.getComments = (req, res, next) => {
     const { article_id } = req.params;
-    selectComments(article_id)
+    selectArticleComments(article_id)
       .then((comments) => {
         res.status(200).send({ comments });
       })
