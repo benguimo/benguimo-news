@@ -1,4 +1,4 @@
-const { selectAllTopics, selectArticleById, selectAllArticles, insertComment, selectComments, updateArticleById} = require("../models/models")
+const { selectAllTopics, selectArticleById, selectAllArticles, insertComment, checkArticleId, selectComments, updateArticleById} = require("../models/models")
 const endpoints = require('../../endpoints.json');
 
 exports.getApi = (req, res, next) => {
@@ -44,30 +44,31 @@ exports.getAllArticles = (req, res, next) => {
   };
   
   exports.postComment = (req, res, next) => {
-    const { article_id } = req.params;
-    const { body, username } = req.body;
-    const comment = { body, username };
-  
-    selectArticleById(article_id)
-      .then((article) => {
-        if (!article) {
-          return Promise.reject({ status: 404, msg: 'Not Found' });
-        }
-  
-        return insertComment(article_id, comment);
-      })
-      .then((comment) => {
-        res.status(201).send({ comment });
-      })
-      .catch(next);
+
+    const body = req.body
+    const article_id = req.params.article_id
+    
+    checkArticleId(article_id)
+    .then(() => {
+      return insertComment(body, article_id)
+    })
+    .then((comment) => {
+      res.status(201).send(comment);
+    })
+    .catch(next);
   };
+  
 
   exports.patchArticleById = (req, res, next) => {
     const { article_id } = req.params;
     const { inc_votes } = req.body;
-    updateArticleById(article_id, inc_votes)
-      .then((article) => {
-        res.status(200).send({ article });
-      })
-      .catch(next);
+
+    checkArticleId(article_id)
+    .then(() => {
+       return updateArticleById(article_id, inc_votes)
+     })
+    .then((article) => {
+        res.status(201).send({ article });
+    })
+    .catch(next);
   };
