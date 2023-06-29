@@ -50,6 +50,7 @@ exports.selectArticleComments = (article_id) => {
 
 
 
+
 exports.insertComment = (article_id, comment) => {
     const { username, body } = comment;
 
@@ -76,4 +77,5 @@ exports.insertComment = (article_id, comment) => {
         return comment;
       });
   };
+
 

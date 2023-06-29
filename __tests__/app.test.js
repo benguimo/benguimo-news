@@ -148,6 +148,7 @@ describe('GET /api/topics', () => {
       .get('/api/articles/1/comments')
       .expect(200)
       .then(({ body }) => {
+
         const { comments } = body
         expect(comments).toBeSortedBy('created_at', { descending: true })
       })
@@ -158,10 +159,11 @@ describe('GET /api/topics', () => {
       .get('/api/articles/2/comments')
       .expect(200)
       .then(({ body }) => {
+
         const { comments } = body
         expect(comments).toEqual([])
       })
-      })
+    })
 
 
     test("404 Not Found: valid api but no ID", () => {
@@ -181,6 +183,7 @@ describe('GET /api/topics', () => {
           expect(body.msg).toBe("Bad Request")
         })
     })
+
   })
 
 
@@ -268,4 +271,5 @@ describe('GET /api/topics', () => {
           expect(response.body.msg).toBe('Not Found')
         })
     })
+
   })
