@@ -173,18 +173,27 @@ describe('GET /api/topics', () => {
             username: 'icellusedkars',
             body: 'POST: comment/article_id',
             created_at: expect.any(String),
-          });
-        });
+          })
+        })
     })
-    
-    test('404 Not Found: non-existing article', () => {
+
+    test('201: comment fully matches structure of database (all comments)', () => {
       return request(app)
-        .post('/api/articles/9898/comments')
-        .send({ username: 'icellusedkars', body: 'POST: comment/article_id' })
-        .expect(404)
+        .post(`/api/articles/1/comments`)
+        .send({
+          body: 'POST: comment/article_id',
+          username: 'butter_bridge',
+        })
+        .expect(201)
         .then(({ body }) => {
-          expect(body.msg).toBe('Not Found');
-        });
+          expect(body.comment).toMatchObject({
+            body: expect.any(String),
+            votes: expect.any(Number),
+            author: expect.any(String),
+            article_id: expect.any(Number),
+            created_at: expect.any(String),
+          })
+        })
     })
 
     test('400 Bad Request: missing fields', () => {
@@ -193,33 +202,92 @@ describe('GET /api/topics', () => {
         .send({})
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe('Bad Request');
-        });
-    });
+          expect(body.msg).toBe('Bad Request')
+        })
+    })
+
+    test('400 Bad Request: Invalid username', () => {
+      return request(app)
+        .post(`/api/articles/1/comments`)
+        .send({
+          body: 'POST: comment/article_id',
+          username: 'no_valid_username',
+        })
+        .expect(400)
+        .then((response) => {
+          expect(response.body.msg).toBe('Bad Request')
+        })
+    })
+
+    test('404 Not Found: valid but non-existent article id', () => {
+      return request(app)
+        .post(`/api/articles/999/comments`)
+        .send({
+          body: 'POST: comment/article_id',
+          username: 'butter_bridge',
+        })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe('Not Found')
+        })
+    })
+    test('404 Not Found: invalid id', () => {
+      return request(app)
+        .post(`/api/articles/random/999/random/comments`)
+        .send({
+          body: 'POST: comment/article_id',
+          username: 'butter_bridge',
+        })
+        .expect(404)
+        .then((response) => {
+          expect(response.body.msg).toBe('Not Found')
+        })
+    })
   })
 
   describe('PATCH: /api/articles/:article_id', () => {
-    test('200: adds new vote to votes in article', () => {
+    test('200 OK: adds new votes to votes in article', () => {
 
       return request(app)
         .patch('/api/articles/1')
-        .send({inc_votes: 1})
+        .send({inc_votes: 50})
         .expect(200)
         .then(({ body }) => {
-          expect(body.article).toEqual({
+          const { article } = body
+          expect(article).toEqual({
             article_id: 1,
             title: "Living in the shadow of a great man",
             topic: "mitch",
             author: "butter_bridge",
             body: "I find this existence challenging",
             created_at: "2020-07-09T21:11:00.000Z",
-            votes: 101,
+            votes: 150,
             article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          });
-        });
+          })
+        })
     })
 
-    test('404 Not Found: valid article ID but non-existing article', () => {
+    test('200 OK: takes away votes (from updated votes)', () => {
+      return request(app)
+        .patch(`/api/articles/1`)
+        .send({ inc_votes: -50 })
+        .expect(200)
+        .then(({ body }) => {
+          const { article } = body
+          expect(article).toEqual({
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T21:11:00.000Z',
+            votes: 50,
+            article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+          })
+        })
+    })
+
+    test('404 Not Found: valid article ID but non-existing', () => {
       return request(app)
         .patch('/api/articles/9999')
         .send({ inc_votes: 1 })
@@ -230,13 +298,23 @@ describe('GET /api/topics', () => {
       })
 
 
-    test('400 Bad Request: missing or invalid inc_votes', () => {
+    test('400 Bad Request: missing inc_votes', () => {
       return request(app)
         .patch('/api/articles/1')
         .send({})
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe('Bad Request');
-        });
-    });
+          expect(body.msg).toBe('Bad Request')
+        })
+    })
+
+    test('400 Bad Request: inc_votes is NaN', () => {
+      return request(app)
+        .patch(`/api/articles/1`)
+        .send({ inc_votes: NaN })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request')
+        })
+    })
   })
