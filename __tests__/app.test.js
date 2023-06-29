@@ -199,27 +199,29 @@ describe('GET /api/topics', () => {
   })
 
   describe('PATCH: /api/articles/:article_id', () => {
-    test('200: adds new vote to votes in article', () => {
-
+    test('201: adds new votes to votes in article', () => {
       return request(app)
         .patch('/api/articles/1')
-        .send({inc_votes: 1})
-        .expect(200)
+        .send({inc_votes: 50})
+        .expect(201)
         .then(({ body }) => {
-          expect(body.article).toEqual({
-            article_id: 1,
-            title: "Living in the shadow of a great man",
-            topic: "mitch",
-            author: "butter_bridge",
-            body: "I find this existence challenging",
-            created_at: "2020-07-09T21:11:00.000Z",
-            votes: 101,
-            article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          });
-        });
+          const { article } = body
+          expect(article.votes).toBe(150)
+        })
     })
 
-    test('404 Not Found: valid article ID but non-existing article', () => {
+    test('201: takes away votes (from updated votes)', () => {
+      return request(app)
+        .patch(`/api/articles/1`)
+        .send({ inc_votes: -50 })
+        .expect(201)
+        .then(({ body }) => {
+          const { article } = body
+          expect(article.votes).toBe(50)
+        })
+    })
+
+    test('404 Not Found: valid article ID but non-existing', () => {
       return request(app)
         .patch('/api/articles/9999')
         .send({ inc_votes: 1 })
@@ -230,10 +232,30 @@ describe('GET /api/topics', () => {
       })
 
 
-    test('400 Bad Request: missing or invalid inc_votes', () => {
+    test('400 Bad Request: missing inc_votes', () => {
       return request(app)
         .patch('/api/articles/1')
         .send({})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request')
+        })
+    })
+
+    test('400 Bad Request: inc_votes is NaN', () => {
+      return request(app)
+        .patch(`/api/articles/1`)
+        .send({ inc_votes: NaN })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request')
+        })
+    })
+
+    test('400 Bad Request: article ID not valid', () => {
+      return request(app)
+        .patch('/api/articles/not-an-ID')
+        .send({ inc_votes: 999 })
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe('Bad Request');
@@ -245,22 +267,23 @@ describe('GET /api/topics', () => {
   describe('DELETE /api/comment/comment_id', () => {
     test("204: deleted successfully", () => {
       return request(app).delete('/api/comments/1').expect(204);
-    });
-    test('404 Not Found: valid comment id but no resource found', () => {
+    })
+
+    test('400 Bad Request: comment ID is not valid', () => {
+      return request(app)
+        .delete('/api/comments/not-an-ID')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request')
+        })
+    })
+
+    test('404 Not Found: valid comment ID but no resource found', () => {
       return request(app)
         .delete(`/api/comments/999`)
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe('Not Found')
         })
-    });
-
-    test('400 Bad Request: comment id is NaN', () => {
-      return request(app)
-        .delete('/api/comments/notANumber')
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe('Bad Request')
-        });
-    });
-  });
+    })
+  })

@@ -1,5 +1,5 @@
-const { selectAllTopics, selectArticleById, selectAllArticles, 
-        insertComment, selectComments, updateArticleById, removeCommentById } = require("../models/models")
+const { selectAllTopics, selectArticleById, selectAllArticles, checkArticleId,
+        insertComment, selectComments, updateArticleById, checkCommentId, removeCommentById } = require("../models/models")
 const endpoints = require('../../endpoints.json');
 
 exports.getApi = (req, res, next) => {
@@ -52,33 +52,44 @@ exports.getAllArticles = (req, res, next) => {
       selectArticleById(article_id)
         .then((article) => {
             if (!article) {
-              return Promise.reject({ status: 404, msg: 'Not Found' });
+              return Promise.reject({ status: 404, msg: 'Not Found' })
             }
     
-          return insertComment(article_id, comment);
+          return insertComment(article_id, comment)
         })
         .then((comment) => {
-          res.status(201).send({ comment });
+          res.status(201).send({ comment })
         })
         .catch(next);
-  };
+  }
 
   exports.patchArticleById = (req, res, next) => {
     const { article_id } = req.params
     const { inc_votes } = req.body
-      updateArticleById(article_id, inc_votes)
-        .then((article) => {
-          res.status(200).send({ article })
-        })
-        .catch(next)
-  };
+
+    checkArticleId(article_id)
+    .then(() => {
+       return updateArticleById(article_id, inc_votes)
+     })
+
+    .then((article) => {
+        res.status(201).send({ article })
+    })
+    .catch(next)
+  }
+  
 
 
   exports.deleteCommentById = (req, res, next) => {
     const { comment_id } = req.params;
-    removeCommentById(comment_id)
+
+    checkCommentId(comment_id)
+    .then(() => {
+      return removeCommentById(comment_id)
+    })
       .then(() => { 
         res.status(204).send()
       })
       .catch(next)
   }
+
