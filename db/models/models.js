@@ -105,3 +105,15 @@ exports.insertComment = (article_id, comment) => {
       });
   };
 
+
+
+  exports.removeCommentById = (comment_id) => {
+    return db.query('SELECT * FROM comments WHERE comment_id = $1;', [comment_id]).then((comments) => {
+      if (!comments.rows.length) {
+        return Promise.reject({ status: 404, msg: 'Not Found' });
+      }
+      return db.query('DELETE FROM comments WHERE comments.comment_id = $1;', [comment_id]).then((comments) => {
+        return comments.rows;
+      });
+    });
+  };

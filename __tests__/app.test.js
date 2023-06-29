@@ -240,3 +240,27 @@ describe('GET /api/topics', () => {
         });
     });
   })
+
+
+  describe('DELETE /api/comment/comment_id', () => {
+    test("204: deleted successfully", () => {
+      return request(app).delete('/api/comments/1').expect(204);
+    });
+    test('404 Not Found: valid comment id but no resource found', () => {
+      return request(app)
+        .delete(`/api/comments/999`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Not Found')
+        })
+    });
+
+    test('400 Bad Request: comment id is NaN', () => {
+      return request(app)
+        .delete('/api/comments/notANumber')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request')
+        });
+    });
+  });
