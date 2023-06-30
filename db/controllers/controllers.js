@@ -63,10 +63,8 @@ exports.getAllArticles = (req, res, next) => {
     const { article_id } = req.params;
     const { inc_votes } = req.body;
 
-    checkArticleId(article_id)
-    .then(() => {
-       return updateArticleById(article_id, inc_votes)
-     })
+ updateArticleById(article_id, inc_votes)
+
     .then((article) => {
         res.status(201).send({ article });
     })
