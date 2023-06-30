@@ -26,14 +26,22 @@ next(err);
 });
 };
 
+
+
+
 exports.getAllArticles = (req, res, next) => {
-    selectAllArticles().then((articles) => {
-        res.status(200).send({ articles });
-      })
-      .catch((err) => {
-        next(err);
-      });
-  };
+  const { topic, sort_by, order } = req.query
+
+	selectAllArticles(topic, sort_by, order)
+		.then((articles) => {
+			res.status(200).send({ articles })
+		})
+		.catch(next)
+}
+
+
+
+
 
 
   exports.getComments = (req, res, next) => {
@@ -91,5 +99,6 @@ exports.getAllArticles = (req, res, next) => {
   exports.getUsers = (req, res, next) => {
     selectUsers().then((users) => {
       res.status(200).send({users});
-    });
+    })
+    .catch(next)
   }

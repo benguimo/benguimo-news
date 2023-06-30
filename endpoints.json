@@ -102,5 +102,56 @@
     "exampleResponse": {
       "users": [{ "username": "butter_bridge", "name": "jonny", "avatar": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"}]
     }
+  },
+  "GET /api/articles?order=ASC / DESC": {
+    "description": "returns list of articles sorted by ascending or descending order. If no value is passed, articles will return ordered in descending order according to the date they were created",
+    "queries": ["order"],
+    "format":{},
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author":  "butter_bridge",
+        "created_at": 1594329060000,
+        "votes": 105,
+        "comment_count": 5,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
+  },
+  "GET /api/articles?topic=value": {
+    "description": "returns list of articles related to specified topic",
+    "queries": ["topic"],
+    "format":{},
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author":  "butter_bridge",
+        "created_at": 1594329060000,
+        "votes": 105,
+        "comment_count": 5,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
+  },
+  "GET /api/articles?sort_by=value": {
+    "description": "returns list of articles sorted by specified value(article id, title, topic, author, created at, votes, comment count article img url). If no value is passed, articles will return sorted by date by default",
+    "queries": ["sort_by"],
+    "format":{},
+    "exampleResponse": {
+      "article": {
+        "article_id": 1,
+        "title": "Living in the shadow of a great man",
+        "topic": "mitch",
+        "author":  "butter_bridge",
+        "created_at": 1594329060000,
+        "votes": 105,
+        "comment_count": 5,
+        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      }
+    }
   }
 }

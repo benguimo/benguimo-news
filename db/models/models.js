@@ -30,18 +30,58 @@ exports.selectArticleById = (article_id) => {
 
 
 
-exports.selectAllArticles = () => {
-  return db.query(`
-  SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url, 
+
+exports.selectAllArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
+
+  let values = []
+
+	const sortBy = [
+		'article_id',
+		'title',
+		'topic',
+		'author',
+		'created_at',
+		'votes',
+		'article_img_url']
+
+
+	if (!sortBy.includes(sort_by)) {
+		return Promise.reject({ status: 400, msg: 'Bad request' });
+	}
+
+
+	let query = `SELECT articles.article_id, title, topic, articles.author, articles.created_at, articles.votes, article_img_url, 
   COUNT(comment_id) AS comment_count
   FROM articles
-  LEFT JOIN comments ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC;
-`).then(({rows: articles}) => {
-      return articles
-  })
-};      
+  LEFT JOIN comments ON articles.article_id = comments.article_id `;
+
+  
+	if (topic) {
+		const validTopics = ['mitch', 'cats', 'paper'];
+      if (!validTopics.includes(topic))  return Promise.reject({ status: 404, msg: 'Not Found' });
+     
+		query += `WHERE articles.topic = $1 `;
+		values.push(topic);
+	}
+
+	query += `GROUP BY articles.article_id ORDER BY ${sort_by} `;
+
+	if (order) {
+		const expectedSortBy = ['desc', 'DESC', 'asc', 'ASC', ];
+		  if (!expectedSortBy.includes(order))  return Promise.reject({ status: 400, msg: 'Bad request' });
+		query += `${order};`;
+	}
+
+
+	return db.query(query, values).then((result) => {
+		return result.rows;
+	});
+};
+
+
+
+
+
 
 exports.checkArticleId = (id) => {
 	return db
