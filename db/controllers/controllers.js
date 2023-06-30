@@ -45,23 +45,19 @@ exports.getAllArticles = (req, res, next) => {
   };
   
   exports.postComment = (req, res, next) => {
-    const { article_id } = req.params;
-    const { body, username } = req.body;
-    const comment = { body, username };
-  
-      selectArticleById(article_id)
-        .then((article) => {
-            if (!article) {
-              return Promise.reject({ status: 404, msg: 'Not Found' })
-            }
-    
-          return insertComment(article_id, comment)
-        })
-        .then((comment) => {
-          res.status(201).send({ comment })
-        })
-        .catch(next);
-  }
+
+    const body = req.body
+    const article_id = req.params.article_id
+
+    checkArticleId(article_id)
+    .then(() => {
+      return insertComment(body, article_id)
+    })
+    .then((comment) => {
+      res.status(201).send(comment);
+    })
+    .catch(next);
+  };
 
   exports.patchArticleById = (req, res, next) => {
     const { article_id } = req.params
