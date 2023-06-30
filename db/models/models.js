@@ -103,6 +103,7 @@ exports.insertComment = (body, article_id) => {
       });
   };
 
+
   
   exports.checkCommentId = (comment_id) => {
     return db.query(`SELECT * FROM comments WHERE comment_id = $1`, [comment_id])
@@ -118,3 +119,4 @@ exports.insertComment = (body, article_id) => {
      return result
     })
    }
+

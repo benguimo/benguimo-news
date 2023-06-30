@@ -327,6 +327,7 @@ describe('GET /api/topics', () => {
 })
 
 
+
   describe('DELETE /api/comment/comment_id', () => {
     test("204: deleted successfully", () => {
       return request(app).delete('/api/comments/1').expect(204);
@@ -350,3 +351,4 @@ describe('GET /api/topics', () => {
         })
     })
   })
+

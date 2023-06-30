@@ -1,28 +1,29 @@
 const { selectAllTopics, selectArticleById, selectAllArticles, checkArticleId,
         insertComment, selectComments, updateArticleById, checkCommentId, removeCommentById } = require("../models/models")
+
 const endpoints = require('../../endpoints.json');
 
 exports.getApi = (req, res, next) => {
- res.status(200).send( endpoints );
+res.status(200).send( endpoints );
 
 }
 
 exports.getAllTopics = (req, res) => {
-    selectAllTopics().then((topics) => {
-      res.status(200).send(topics);
-    });
-  };
+selectAllTopics().then((topics) => {
+res.status(200).send(topics);
+});
+};
 
 
 exports.getArticleById = (req, res, next) => {
-	const { article_id } = req.params;
-	selectArticleById(article_id)
-		.then((article) => {
-			res.status(200).send({ article });
-		})
-    .catch((err) => {
-      next(err);
-    });
+const { article_id } = req.params;
+selectArticleById(article_id)
+.then((article) => {
+res.status(200).send({ article });
+})
+.catch((err) => {
+next(err);
+});
 };
 
 exports.getAllArticles = (req, res, next) => {
@@ -88,4 +89,5 @@ exports.getAllArticles = (req, res, next) => {
       })
       .catch(next)
   }
+
 
