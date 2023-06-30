@@ -37,6 +37,7 @@ exports.getAllArticles = (req, res, next) => {
   exports.getComments = (req, res, next) => {
     const { article_id } = req.params;
     selectArticleComments(article_id)
+
       .then((comments) => {
         res.status(200).send({ comments });
       })
@@ -58,3 +59,4 @@ exports.postComment = (req, res, next) => {
   })
   .catch(next);
 };
+

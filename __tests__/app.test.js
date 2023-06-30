@@ -148,9 +148,11 @@ describe('GET /api/topics', () => {
       .get('/api/articles/1/comments')
       .expect(200)
       .then(({ body }) => {
+
         const { comments } = body
         expect(comments).toBeSortedBy('created_at', { descending: true })
       })
+
   })
 
   test('200 OK: empty array when article_ID IS VALID BUT has NO COMMENTS', () => {
@@ -158,9 +160,11 @@ describe('GET /api/topics', () => {
       .get('/api/articles/2/comments')
       .expect(200)
       .then(({ body }) => {
+
         const { comments } = body
         expect(comments).toEqual([])
       })
+
       })
 
 
@@ -181,6 +185,7 @@ describe('GET /api/topics', () => {
           expect(body.msg).toBe("Bad Request")
         })
     })
+
   })
 
 
@@ -271,4 +276,5 @@ describe('GET /api/topics', () => {
               expect(body.msg).toBe('Bad Request')
             })
         })
+
   })
