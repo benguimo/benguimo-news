@@ -1,4 +1,6 @@
-const { selectAllTopics, selectArticleById, selectAllArticles, checkArticleId, insertComment, selectArticleComments} = require("../models/models")
+
+const { selectAllTopics, selectArticleById, selectAllArticles, insertComment, checkArticleId, selectComments, updateArticleById} = require("../models/models")
+
 const endpoints = require('../../endpoints.json');
 
 exports.getApi = (req, res, next) => {
@@ -45,18 +47,31 @@ exports.getAllArticles = (req, res, next) => {
   };
   
 
-exports.postComment = (req, res, next) => {
+  exports.postComment = (req, res, next) => {
 
-  const body = req.body
-	const article_id = req.params.article_id
-	
-  checkArticleId(article_id)
-  .then(() => {
-    return insertComment(body, article_id)
-  })
-  .then((comment) => {
-    res.status(201).send(comment);
-  })
-  .catch(next);
-};
+    const body = req.body
+    const article_id = req.params.article_id
+    
+    checkArticleId(article_id)
+    .then(() => {
+      return insertComment(body, article_id)
+    })
+    .then((comment) => {
+      res.status(201).send(comment);
+    })
+    .catch(next);
+  };
+  
+
+  exports.patchArticleById = (req, res, next) => {
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+
+ updateArticleById(article_id, inc_votes)
+
+    .then((article) => {
+        res.status(201).send({ article });
+    })
+    .catch(next);
+  };
 
