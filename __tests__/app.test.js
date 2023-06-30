@@ -1,5 +1,5 @@
 const request = require("supertest")
-const app = require("../db/app")
+const app = require("../app")
 const db = require("../db/connection")
 const seed = require("../db/seeds/seed")
 const data = require("../db/data/test-data")
@@ -261,7 +261,18 @@ describe('GET /api/topics', () => {
           expect(body.msg).toBe('Bad Request');
         });
     });
+
+    test('400 Bad Request: article ID not valid', () => {
+      return request(app)
+        .patch('/api/articles/not-an-ID')
+        .send({ inc_votes: 999 })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request');
+
+        });
   })
+})
 
 
   describe('DELETE /api/comment/comment_id', () => {
