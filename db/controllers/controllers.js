@@ -1,4 +1,6 @@
+
 const { selectAllTopics, selectArticleById, selectAllArticles, insertComment, checkArticleId, selectComments, updateArticleById} = require("../models/models")
+
 const endpoints = require('../../endpoints.json');
 
 exports.getApi = (req, res, next) => {
@@ -36,13 +38,15 @@ exports.getAllArticles = (req, res, next) => {
 
   exports.getComments = (req, res, next) => {
     const { article_id } = req.params;
-    selectComments(article_id)
+    selectArticleComments(article_id)
+
       .then((comments) => {
         res.status(200).send({ comments });
       })
       .catch(next);
   };
   
+
   exports.postComment = (req, res, next) => {
 
     const body = req.body
@@ -70,3 +74,4 @@ exports.getAllArticles = (req, res, next) => {
     })
     .catch(next);
   };
+

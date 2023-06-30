@@ -66,33 +66,33 @@ describe('GET /api/topics', () => {
           .expect(200)
           .then(({ body }) => {
             const { article } = body
-            expect(article).toHaveProperty('article_id');
-            expect(article).toHaveProperty('title');
-            expect(article).toHaveProperty('topic');
-            expect(article).toHaveProperty('author');
-            expect(article).toHaveProperty('body');
-            expect(article).toHaveProperty('created_at');
-            expect(article).toHaveProperty('votes');
-            expect(article).toHaveProperty('article_img_url');
-            });
-          });
+            expect(article).toHaveProperty('article_id')
+            expect(article).toHaveProperty('title')
+            expect(article).toHaveProperty('topic')
+            expect(article).toHaveProperty('author')
+            expect(article).toHaveProperty('body')
+            expect(article).toHaveProperty('created_at')
+            expect(article).toHaveProperty('votes')
+            expect(article).toHaveProperty('article_img_url')
+            })
+          })
          test('400 Bad Request: error message when passed invalid article ID', () => {
               return request(app)
                 .get('/api/articles/noID')
                 .expect(400)
                 .then(({ body }) => {
-                  expect(body.msg).toBe('Bad Request');
-                });
-            });
+                  expect(body.msg).toBe('Bad Request')
+                })
+            })
           test('404 Not Found: valid api but nonexisting id', () => {
               return request(app)
               .get('/api/articles/56565')
               .expect(404)
               .then(({ body }) => {
-                      expect(body.msg).toBe('Not Found');
+                      expect(body.msg).toBe('Not Found')
           })
-      }); 
-  });
+      }) 
+  })
 
   
   describe('GET /api/articles', () => {
@@ -102,7 +102,7 @@ describe('GET /api/topics', () => {
         .expect(200)
         .then(({ body }) => {
           const { articles } = body
-          expect(articles).toHaveLength(13);
+          expect(articles).toHaveLength(13)
           articles.forEach((article) => {
             expect(article).not.toHaveProperty('body')
             expect(article).toMatchObject({
@@ -113,50 +113,80 @@ describe('GET /api/topics', () => {
               votes: expect.any(Number),
               article_img_url: expect.any(String),
               comment_count: expect.any(String)
-            });
-          });
-        });
-    });
+            })
+          })
+        })
+    })
     
-  });
+  })
 
   describe("GET /api/articles/:article_id/comments", () => {
+
     test("200 OK: all comments for an article", () => {
       return request(app)
         .get("/api/articles/1/comments")
         .expect(200)
         .then(({ body }) => {
-          const { comments } = body;
-          expect(comments).toBeInstanceOf(Array);
+          const { comments } = body
+          expect(comments).toBeInstanceOf(Array)
+          expect(comments).toHaveLength(11) 
+
           comments.forEach((comment) => {
-            expect(comment).toHaveProperty("comment_id");
-            expect(comment).toHaveProperty("votes");
-            expect(comment).toHaveProperty("created_at");
-            expect(comment).toHaveProperty("author");
-            expect(comment).toHaveProperty("body");
-            expect(comment).toHaveProperty("article_id");
-          });
-        });
-    });
-  
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              body:  expect.any(String),
+              votes: expect.any(Number),
+              author: expect.any(String),
+              article_id: expect.any(Number),
+              created_at: expect.any(String)
+            })
+          })
+      })
+  })
+  test('200 OK: comments served with the most recent comments first.', () => {
+    return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({ body }) => {
+
+        const { comments } = body
+        expect(comments).toBeSortedBy('created_at', { descending: true })
+      })
+
+  })
+
+  test('200 OK: empty array when article_ID IS VALID BUT has NO COMMENTS', () => {
+    return request(app)
+      .get('/api/articles/2/comments')
+      .expect(200)
+      .then(({ body }) => {
+
+        const { comments } = body
+        expect(comments).toEqual([])
+      })
+
+      })
+
+
     test("404 Not Found: valid api but no ID", () => {
       return request(app)
         .get("/api/articles/99999/comments")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Not Found");
-        });
-    });
+          expect(body.msg).toBe("Not Found")
+        })
+    })
   
     test("400 Bad Request: error message when passed invalid article ID", () => {
       return request(app)
         .get("/api/articles/noID/comments")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad Request");
-        });
-    });
-  });
+          expect(body.msg).toBe("Bad Request")
+        })
+    })
+
+  })
 
 
   describe('POST /api/articles/:article_id/comments', () => {
@@ -176,6 +206,7 @@ describe('GET /api/topics', () => {
               created_at: expect.any(String),
             })
           );
+
         });
         })
 
@@ -323,6 +354,76 @@ describe('GET /api/topics', () => {
         .expect(400)
         .then(({ body }) => {
           expect(body.msg).toBe('Bad Request');
+
         });
-    });
+        })
+
+
+        test('201: ignores the unnecessary property', () => {
+          return request(app)
+            .post('/api/articles/1/comments')
+            .send({
+              username: 'butter_bridge',
+              body: 'POST: comment/article_id',
+              ignoreThis: 'not to be posted',
+            })
+            .expect(201)
+            .then(({ body }) => {
+              expect(body[0]).toEqual(
+                expect.objectContaining({
+                  comment_id: 19,
+                  body: 'POST: comment/article_id',
+                  votes: 0,
+                  author: expect.any(String),
+                  article_id: 1,
+                  created_at: expect.any(String),
+                })
+              );
+              expect(body[0]).not.toHaveProperty('ignoreThis');
+            });
+        })
+
+
+        test('400 Bad Request: invalid properties', () => {
+          return request(app)
+            .post('/api/articles/1/comments')
+            .send({random: 'butter_bridge', head: "POST: comment/article_id",})
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe('Bad Request')
+            })
+        })
+
+        test('404 Not Found: valid but non-existing ID', () => {
+          return request(app)
+            .post('/api/articles/999/comments')
+            .send({ username: 'butter_bridge', body: 'POST: comment/article_id' })
+            .expect(404)
+            .then(({ body }) => {
+              expect(body.msg).toBe('Not Found');
+            })
+        })
+
+
+        test('400 Bad Request: invalid id (non-existing)', () => {
+          return request(app)
+            .post('/api/articles/not-an-ID/comments')
+            .send({ username: 'butter_bridge', body: 'POST: comment/article_id' })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe('Bad Request')
+            })
+        })
+
+
+        test('400 Bad Request: returns missing fields', () => {
+          return request(app)
+            .post('/api/articles/1/comments')
+            .send({ username: 'butter_bridge' })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe('Bad Request')
+            })
+        })
+
   })
