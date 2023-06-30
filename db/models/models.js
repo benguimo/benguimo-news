@@ -105,18 +105,22 @@ exports.insertComment = (body, article_id) => {
 
 
   
-  exports.checkCommentId = (comment_id) => {
-    return db.query(`SELECT * FROM comments WHERE comment_id = $1`, [comment_id])
-      .then((result) => {
-        if (result.rows.length === 0) {
-          return Promise.reject({ status: 404, msg: 'Not Found' });
-        }
-      });
-  }
 
-  exports.removeCommentById = (id) => {
-    return db.query(`DELETE FROM comments WHERE comment_id = $1`, [id]).then((result) => {
-     return result
+  exports.removeCommentById = (comment_id) => {
+    return db.query('SELECT * FROM comments WHERE comment_id = $1;', [comment_id]).then((comments) => {
+      if (comments.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: 'Not Found' });
+      }
+      return db.query('DELETE FROM comments WHERE comments.comment_id = $1;', [comment_id]).then((comments) => {
+        return comments.rows;
+      });
     })
    }
 
+
+   exports.selectUsers = () => {
+    return db.query(`SELECT * FROM users`).then((users) => {
+      return users.rows;
+    });
+  }
+  
