@@ -1,5 +1,5 @@
 const express = require("express")
-const { getApi, getAllTopics, getArticleById, getAllArticles, getArticleComments } = require("./controllers/controllers")
+const { getApi, getAllTopics, getArticleById, getAllArticles,postComment, getComments,  } = require("./controllers/controllers")
 
 const {
   handlePsqlErrors,
@@ -9,7 +9,7 @@ const {
 
 
 const app = express();
-
+app.use(express.json())
 
 
 
@@ -17,10 +17,12 @@ app.get("/api", getApi);
 app.get("/api/topics", getAllTopics);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles", getAllArticles);
-app.get("/api/articles/:article_id/comments", getArticleComments);
+app.post('/api/articles/:article_id/comments', postComment);
+app.get("/api/articles/:article_id/comments", getComments);
+
 
 app.all("*", (_, res) => {
-  res.status(404).send({msg: "Not found"})
+  res.status(404).send({msg: "Not Found"})
 })
 
 app.use(handlePsqlErrors);
