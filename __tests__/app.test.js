@@ -325,4 +325,30 @@ describe('GET /api/topics', () => {
         });
     });
 })
-  
+
+
+
+  describe('DELETE /api/comment/comment_id', () => {
+    test("204: deleted successfully", () => {
+      return request(app).delete('/api/comments/1').expect(204);
+    })
+
+    test('400 Bad Request: comment ID is not valid', () => {
+      return request(app)
+        .delete('/api/comments/not-an-ID')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Bad Request')
+        })
+    })
+
+    test('404 Not Found: valid comment ID but no resource found', () => {
+      return request(app)
+        .delete(`/api/comments/999`)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe('Not Found')
+        })
+    })
+  })
+

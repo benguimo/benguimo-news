@@ -89,5 +89,11 @@
         "votes": 101
       }
     }
+  },
+  "DELETE /api/articles/:article_id": {
+    "description": "Deletes an article by its ID",
+    "exampleResponse": {
+      "message": "Article deleted successfully"
+    }
   }
 }
