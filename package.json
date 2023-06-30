@@ -8,9 +8,9 @@
     "seed": "node ./db/seeds/run-seed.js",
     "test": "jest",
     "prepare": "husky install",
-    "dev": "node ./db/listen.js",
+    "dev": "node listen.js",
     "seed-prod": "NODE_ENV=production npm run seed",
-    "start": "node ./db/listen.js"
+    "start": "node listen.js"
   },
   "repository": {
     "type": "git",
