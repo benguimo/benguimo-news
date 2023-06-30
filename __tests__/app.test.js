@@ -387,3 +387,139 @@ describe('DELETE /api/comment/comment_id', () => {
         })
       })
     })
+
+
+
+
+
+
+
+
+
+    describe('1. GET api/articles?sort_by', () => {
+      test('200 OK: returns -> SORT BY DESC (author)', () => {
+        return request(app)
+          .get('/api/articles?sort_by=author')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body
+            expect(articles).toBeSortedBy('author', { descending: true });
+          })
+      })
+
+
+      test('200 OK: returns -> SORT BY DESC (title)', () => {
+        return request(app)
+          .get('/api/articles?sort_by=title')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body
+            expect(articles).toBeSortedBy('title', { descending: true })
+          })
+      })
+
+
+      test('200 OK: returns -> SORT BY DESC (created_at)', () => {
+        return request(app)
+          .get('/api/articles')
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.articles).toBeSortedBy('created_at', { descending: true })
+          })
+      })
+
+
+      test('400 Bad Request: invalid SORT BY', () => {
+        return request(app)
+          .get('/api/articles?sort_by=none')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Bad request')
+          })
+      })
+    })
+
+
+
+
+
+    describe('2. GET api/articles?order=ASC', () => {
+      test('200 OK: returns list -> ORDER BY ASC', () => {
+        return request(app)
+          .get('/api/articles?order=asc')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body
+            expect(articles).toBeSortedBy('created_at', { ascending: true })
+          })
+      })
+
+
+      test('400 Bad Request: invalid ORDER BY ', () => {
+        return request(app)
+          .get('/api/articles?order=none')
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Bad request')
+          })
+      })
+    })
+
+
+
+
+
+    describe('3. GET api/articles?topic= <topic>', () => {
+      test('200 OK: empty array -> valid topic but non-existing articles', () => {
+        return request(app)
+          .get('/api/articles?topic=paper')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body
+            expect(articles).toEqual([])
+          })
+      })
+
+
+      test('200 OK: articles -> topic: Mitch (all articles with Mitch as topic) ', () => {
+        return request(app)
+          .get('/api/articles?topic=mitch')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body
+            articles.forEach((article) => {
+              expect(article.topic).toBe('mitch')
+            })
+          })
+      })
+
+
+      test('200 OK: articles -> topic: Cats (all articles with Cats as topic)', () => {
+        return request(app)
+          .get('/api/articles?topic=cats')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body
+            articles.forEach((article) => {
+              expect(article.topic).toBe('cats')
+            })
+          })
+      })
+
+
+      test('404 Not Found: invalid topic', () => {
+        return request(app)
+          .get('/api/articles?topic=none')
+          .expect(404)
+          .then(({ body }) => {
+            expect(body.msg).toBe('Not Found');
+          })
+      })
+    })
+
+
+
+
+
+
+
