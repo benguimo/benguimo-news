@@ -1,77 +1,76 @@
-
-const { selectAllTopics, selectArticleById, selectAllArticles, insertComment, checkArticleId, selectComments, updateArticleById} = require("../models/models")
-
+const { selectAllTopics, selectArticleById, selectAllArticles, checkArticleId,
+  insertComment, selectComments, updateArticleById } = require("../models/models")
 const endpoints = require('../../endpoints.json');
 
 exports.getApi = (req, res, next) => {
- res.status(200).send( endpoints );
+res.status(200).send( endpoints );
 
 }
 
 exports.getAllTopics = (req, res) => {
-    selectAllTopics().then((topics) => {
-      res.status(200).send(topics);
-    });
-  };
+selectAllTopics().then((topics) => {
+res.status(200).send(topics);
+});
+};
 
 
 exports.getArticleById = (req, res, next) => {
-	const { article_id } = req.params;
-	selectArticleById(article_id)
-		.then((article) => {
-			res.status(200).send({ article });
-		})
-    .catch((err) => {
-      next(err);
-    });
+const { article_id } = req.params;
+selectArticleById(article_id)
+.then((article) => {
+res.status(200).send({ article });
+})
+.catch((err) => {
+next(err);
+});
 };
 
 exports.getAllArticles = (req, res, next) => {
-    selectAllArticles().then((articles) => {
-        res.status(200).send({ articles });
-      })
-      .catch((err) => {
-        next(err);
-      });
-  };
+selectAllArticles().then((articles) => {
+  res.status(200).send({ articles });
+})
+.catch((err) => {
+  next(err);
+});
+};
 
 
-  exports.getComments = (req, res, next) => {
-    const { article_id } = req.params;
-    selectComments(article_id)
+exports.getComments = (req, res, next) => {
+const { article_id } = req.params;
+selectComments(article_id)
+.then((comments) => {
+  res.status(200).send({ comments });
+})
+.catch(next);
+};
 
-      .then((comments) => {
-        res.status(200).send({ comments });
-      })
-      .catch(next);
-  };
-  
+exports.postComment = (req, res, next) => {
 
-  exports.postComment = (req, res, next) => {
+const body = req.body
+const article_id = req.params.article_id
 
-    const body = req.body
-    const article_id = req.params.article_id
-    
-    checkArticleId(article_id)
-    .then(() => {
-      return insertComment(body, article_id)
-    })
-    .then((comment) => {
-      res.status(201).send(comment);
-    })
-    .catch(next);
-  };
-  
+checkArticleId(article_id)
+.then(() => {
+return insertComment(body, article_id)
+})
+.then((comment) => {
+res.status(201).send(comment);
+})
+.catch(next);
+};
 
-  exports.patchArticleById = (req, res, next) => {
-    const { article_id } = req.params;
-    const { inc_votes } = req.body;
+exports.patchArticleById = (req, res, next) => {
+const { article_id } = req.params
+const { inc_votes } = req.body
 
- updateArticleById(article_id, inc_votes)
+checkArticleId(article_id)
+.then(() => {
+ return updateArticleById(article_id, inc_votes)
+})
 
-    .then((article) => {
-        res.status(201).send({ article });
-    })
-    .catch(next);
-  };
+.then((article) => {
+  res.status(201).send({ article })
+})
+.catch(next)
+}
 
