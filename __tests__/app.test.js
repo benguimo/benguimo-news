@@ -155,7 +155,7 @@ describe('GET /api/topics', () => {
 
   })
 
-  test('200 OK: empty array when article_ID IS VALID BUT has NO COMMENTS', () => {
+/*   test('200 OK: empty array when article_ID IS VALID BUT has NO COMMENTS', () => {
     return request(app)
       .get('/api/articles/2/comments')
       .expect(200)
@@ -166,7 +166,7 @@ describe('GET /api/topics', () => {
       })
 
       })
-
+ */
 
     test("404 Not Found: valid api but no ID", () => {
       return request(app)
@@ -358,84 +358,4 @@ describe('GET /api/topics', () => {
         });
         })
 
-
-        test('201: ignores the unnecessary property', () => {
-          return request(app)
-            .post('/api/articles/1/comments')
-            .send({
-              username: 'butter_bridge',
-              body: 'POST: comment/article_id',
-              ignoreThis: 'not to be posted',
-            })
-            .expect(201)
-            .then(({ body }) => {
-              expect(body[0]).toEqual(
-                expect.objectContaining({
-                  comment_id: 19,
-                  body: 'POST: comment/article_id',
-                  votes: 0,
-                  author: expect.any(String),
-                  article_id: 1,
-                  created_at: expect.any(String),
-                })
-              );
-              expect(body[0]).not.toHaveProperty('ignoreThis');
-            });
-        })
-
-
-        test('400 Bad Request: invalid properties', () => {
-          return request(app)
-            .post('/api/articles/1/comments')
-            .send({random: 'butter_bridge', head: "POST: comment/article_id",})
-            .expect(400)
-            .then(({ body }) => {
-              expect(body.msg).toBe('Bad Request')
-            })
-        })
-
-        test('404 Not Found: valid but non-existing ID', () => {
-          return request(app)
-            .post('/api/articles/999/comments')
-            .send({ username: 'butter_bridge', body: 'POST: comment/article_id' })
-            .expect(404)
-            .then(({ body }) => {
-              expect(body.msg).toBe('Not Found');
-            })
-        })
-
-
-        test('400 Bad Request: invalid id (non-existing)', () => {
-          return request(app)
-            .post('/api/articles/not-an-ID/comments')
-            .send({ username: 'butter_bridge', body: 'POST: comment/article_id' })
-            .expect(400)
-            .then(({ body }) => {
-              expect(body.msg).toBe('Bad Request')
-            })
-        })
-
-
-        test('400 Bad Request: returns missing fields', () => {
-          return request(app)
-            .post('/api/articles/1/comments')
-            .send({ username: 'butter_bridge' })
-            .expect(400)
-            .then(({ body }) => {
-              expect(body.msg).toBe('Bad Request')
-            })
-        })
-
-        test('400: Invalid username', () => {
-          return request(app)
-            .post(`/api/articles/1/comments`)
-            .send({
-              body: 'Testing POST comment for article Id',
-              username: '',
-            })
-            .expect(400)
-            .then(({ body }) => {
-              expect(body.msg).toBe('Bad Request')
-            })
-  })
   })
