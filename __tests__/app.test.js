@@ -277,4 +277,16 @@ describe('GET /api/topics', () => {
             })
         })
 
+        test('400: Invalid username', () => {
+          return request(app)
+            .post(`/api/articles/1/comments`)
+            .send({
+              body: 'Testing POST comment for article Id',
+              username: '',
+            })
+            .expect(400)
+            .then(({ body }) => {
+              expect(body.msg).toBe('Bad Request')
+            })
+  })
   })
