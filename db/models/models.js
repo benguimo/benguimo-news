@@ -116,3 +116,11 @@ exports.insertComment = (body, article_id) => {
       });
     })
    }
+
+
+   exports.selectUsers = () => {
+    return db.query(`SELECT * FROM users`).then((users) => {
+      return users.rows;
+    });
+  }
+  

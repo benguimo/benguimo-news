@@ -356,3 +356,34 @@ describe('DELETE /api/comment/comment_id', () => {
     })
   })
 
+  describe('GET /api/users', () => {
+    test('200 OK: users block is an array', () => {
+      return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toHaveProperty('users')
+          expect(Array.isArray(body.users)).toBe(true)
+        })
+    })
+
+    test('200 OK: returns all users with properties (username, name, avatar)', () => {
+      return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then(({ body }) => {
+          const { users } = body
+
+          expect(users).toHaveLength(4)
+          expect(Array.isArray(users)).toBe(true)
+
+          users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String)
+            })
+          })
+        })
+      })
+    })

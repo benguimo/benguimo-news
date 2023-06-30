@@ -1,5 +1,5 @@
 const { selectAllTopics, selectArticleById, selectAllArticles, checkArticleId,
-        insertComment, selectComments, updateArticleById, removeCommentById } = require("../models/models")
+        insertComment, selectComments, updateArticleById, removeCommentById, selectUsers } = require("../models/models")
 
 const endpoints = require('../../endpoints.json');
 
@@ -88,4 +88,8 @@ exports.getAllArticles = (req, res, next) => {
   }
 
 
-
+  exports.getUsers = (req, res, next) => {
+    selectUsers().then((users) => {
+      res.status(200).send({users});
+    });
+  }

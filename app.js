@@ -1,7 +1,7 @@
 const express = require("express")
 const { getApi, getAllTopics, getArticleById, 
         getAllArticles, postComment, getComments,
-        patchArticleById, deleteCommentById } = require("./db/controllers/controllers")
+        patchArticleById, deleteCommentById, getUsers } = require("./db/controllers/controllers")
 
 
 const {
@@ -23,8 +23,9 @@ app.get("/api/articles", getAllArticles);
 app.post('/api/articles/:article_id/comments', postComment);
 app.get("/api/articles/:article_id/comments", getComments);
 app.patch("/api/articles/:article_id", patchArticleById);
-
 app.delete("/api/comments/:comment_id", deleteCommentById);
+
+app.get("/api/users", getUsers);  
 
 
 
