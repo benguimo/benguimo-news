@@ -1,13 +1,13 @@
 const express = require("express")
 const { getApi, getAllTopics, getArticleById, 
         getAllArticles, postComment, getComments,
-        patchArticleById } = require("./controllers/controllers")
+        patchArticleById } = require("./db/controllers/controllers")
 
 const {
   handlePsqlErrors,
   handleCustomErrors,
   catchAll
-} = require("./errors")
+} = require("./db/errors")
 
 
 const app = express();
