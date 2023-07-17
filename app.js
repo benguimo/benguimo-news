@@ -4,6 +4,10 @@ const { getApi, getAllTopics, getArticleById,
         patchArticleById, deleteCommentById, getUsers } = require("./db/controllers/controllers")
 
 
+const cors = require('cors')
+const app = express()
+
+
 const {
   handlePsqlErrors,
   handleCustomErrors,
@@ -11,7 +15,7 @@ const {
 } = require("./db/errors")
 
 
-const app = express();
+app.use(cors())
 app.use(express.json())
 
 

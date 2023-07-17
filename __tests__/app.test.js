@@ -76,6 +76,17 @@ describe('GET /api/topics', () => {
             expect(article).toHaveProperty('article_img_url');
             });
           });
+
+          test('200: Should return an object containing comment count for specified article id', () => {
+            return request(app)
+              .get('/api/articles/1')
+              .expect(200)
+              .then(({ body }) => {
+                const { article } = body
+                expect(article).toHaveProperty('comment_count');
+              });
+          });
+
          test('400 Bad Request: error message when passed invalid article ID', () => {
               return request(app)
                 .get('/api/articles/noID')
