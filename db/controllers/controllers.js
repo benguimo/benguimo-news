@@ -53,6 +53,8 @@ exports.getAllArticles = (req, res, next) => {
       .catch(next);
   };
   
+
+  
   exports.postComment = (req, res, next) => {
 
     const body = req.body
@@ -67,6 +69,10 @@ exports.getAllArticles = (req, res, next) => {
     })
     .catch(next);
   };
+
+
+
+
 
   exports.patchArticleById = (req, res, next) => {
     const { article_id } = req.params

@@ -60,6 +60,7 @@ exports.selectAllArticles = (topic, sort_by = 'created_at', order = 'DESC') => {
 		'article_id',
 		'title',
 		'topic',
+    'comment_count',
 		'author',
 		'created_at',
 		'votes',
